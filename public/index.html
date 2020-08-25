@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+ 
+  <head>
+       <style>
+               #content{
+                       display: flex;
+                       flex-direction:column;
+                       align-items: center;
+                       justify-content: space-between;
+                       overflow-x: hidden;
+                       padding-left: 5%;
+                       padding-right: 5%;
+                       padding-top: 2%;
+               }
+               #image{
+                       margin-bottom: 1%;
+               }
+               #bottone{
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 4%;
+                        
+               }
+               #barra{
+                       display: flex;
+                       justify-content: flex-start;
+                       height: 25px;
+                       width:0%;
+                margin-top: 2%;;
+                        border-radius: 5%;
+
+                       background-image: linear-gradient(to right, lightgreen , lightskyblue);
+               }
+               #content2{
+                       width: 90%;
+                       margin-left: 5%;
+                       margin-right: 5%;
+               }
+       </style>
+        <title>Web LED Control</title>
+        <meta name="viewport" content="width=400px" />
+        
+        <script src="socket.io/socket.io.js"></script>
+        <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">	
+  </head>
+
+  <body>
+          <div id="content">
+          <h3 style="margin-bottom: 2%; font-family:serif; text-align: center;">ESAME CON ARDUINO</h3>
+        <img src="images/spento.jpg" alt="..." class="img-thumbnail" id="image">
+        <!--min="0" max="255" value="50" step="1"-->
+        <br><br><span id="outputText" style="display: none;">50</span>
+ <!--       <br>
+        <button onclick="showValue(this.value)" value="1">Acceso</button>
+        <br>
+        <button onclick="showValue(this.value)" value="0">Spento</button>
+        <br>
+        <button onclick="blink(this.value)" value="2">blinck</button>
+        -->
+    
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="showValue(this.value)" value="1">Acceso</button>
+<button type="button" class="btn btn-secondary btn-lg btn-block" onclick="showValue(this.value)" value="0">Spento</button>
+<button type="button" class="btn btn-primary btn-lg btn-block" onclick="blink(this.value)" value="2">Lampeggia</button>
+
+
+<button type="button" class="btn btn-success btn-lg btn-block" value="2" id="bottone">
+        keep pressed <p id="view"></p><h6><span class="badge badge-secondary">New</span></h6>
+</button>
+</div>
+<div id="content2">
+<div id="barra">
+
+</div>
+</div>
+
+       
+
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+                 var view=document.getElementById('view');
+
+                var socket = io.connect();
+                var bottone= document.getElementById('bottone');
+                var tempopremuto=0;
+                        let barra=document.getElementById('barra');
+                      
+  
+                let aumenta;
+
+                bottone.ontouchstart = function(){
+                        view.style.display='flex';
+                        tempopremuto=0;
+                        
+                        aumenta=setInterval(()=>{
+                                if (tempopremuto<2001) {
+                                        tempopremuto++;
+                                        
+                                        barra.style.width=(tempopremuto/20)+'%';
+                        view.innerHTML=tempopremuto;                                                                  
+                                        
+                                }
+                                else{
+                                                alert('il limite è di 2000 millisecondi');
+                                                clearInterval(aumenta);
+                                                tempopremuto=2000;
+                                                view.innerHTML=tempopremuto;   
+                                                let tempo=tempopremuto;
+                                       
+                                       document.getElementById("outputText").innerHTML=2;
+                                       socket.emit('led', { value: 2, time:tempo });
+                                }
+                },1);
+                        
+
+                }
+                bottone.ontouchend = function(){
+
+                      
+                        clearInterval(aumenta);
+                        let tempo=tempopremuto;
+                                       
+                        document.getElementById("outputText").innerHTML=2;
+                        socket.emit('led', { value: 2, time:tempo });
+                       
+                        
+                }
+
+                bottone.onmousedown = function(){
+                        view.style.display='flex';
+                        tempopremuto=0;
+                        
+                        aumenta=setInterval(()=>{
+                                if (tempopremuto<2001) {
+                                        tempopremuto++;
+                                        
+                                        barra.style.width=(tempopremuto/20)+'%';
+                        view.innerHTML=tempopremuto;                                                                  
+                                        
+                                }
+                                else{
+                                                alert('il limite è di 2000 millisecondi');
+                                                clearInterval(aumenta);
+                                                tempopremuto=2000;
+                                                view.innerHTML=tempopremuto;   
+                                                let tempo=tempopremuto;
+                                       
+                                       document.getElementById("outputText").innerHTML=2;
+                                       socket.emit('led', { value: 2, time:tempo });
+                                }
+                },1);
+                }
+                bottone.onmouseup = function(){
+
+                                   
+                        clearInterval(aumenta);
+                        let tempo=tempopremuto;
+                                       
+                        document.getElementById("outputText").innerHTML=2;
+                        socket.emit('led', { value: 2, time:tempo });
+                    
+                        
+                }
+                socket.on('led', function (data) {
+                        
+                        document.getElementById("outputText").innerHTML = data.value;
+                });
+               
+                function showValue(newValue)
+                {
+                        view.style.display='none';
+                        barra.style.width=0+'%';
+                        let tempo=0;
+                        var img=document.getElementById("image");
+                        if (newValue=='1') {
+                                img.setAttribute('src',"images/acceso.jpg");
+                        }
+                        else if (newValue=='0') {
+                                img.setAttribute('src',"images/spento.jpg");
+                        }
+
+                        document.getElementById("outputText").innerHTML=newValue;
+                        socket.emit('led', { value: newValue, time:tempo  });
+                        
+                }
+          
+                function blink(newValue){
+                        var img=document.getElementById("image");
+                        img.setAttribute('src',"images/acceso.jpg");
+                        let tempo=0;
+                        tempo=+prompt('inserisci il tempo in millisecondi');
+                        console.log(typeof tempo);
+                        
+                        document.getElementById("outputText").innerHTML=newValue;
+                        socket.emit('led', { value: newValue, time:tempo });
+                }
+        </script>
+
+  </body>
+</html>
